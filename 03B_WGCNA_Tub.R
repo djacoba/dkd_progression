@@ -665,3 +665,26 @@ rbind(tub.edge.black, tub.edge.yellow, tub.edge.cyan, tub.edge.royalblue,
 
 writexl::write_xlsx(wgcna.tub.network, "wgcna_tub_network.xlsx")
 
+#Extract HUB-genes
+clr = sort(unique(moduleColors))
+hubs = character()
+
+for (i in 1:length(clr)) {
+  dt = geneModuleMembership[,i]
+  kk = order(dt, decreasing = T)
+  nm = rownames(geneModuleMembership)[kk]
+  top10 = nm[1:10] #chose a number of top HUB-genes to extract from each module
+  hubs = cbind(hubs,top10)
+}
+
+hubs = as.data.frame(hubs)
+colnames(hubs) = clr
+
+write.table(hubs, "Top_10_ModuleMembership_genes.txt", sep = "\t", quote = F)
+
+hub = chooseTopHubInEachModule(wgcnaExpr, moduleColors, omitColors = "grey",
+                               power = 1, type = "unsigned")
+
+write.table(hub,"Module_top1_HUB-genes.txt", quote = F, col.names = F)
+
+
